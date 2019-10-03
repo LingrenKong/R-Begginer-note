@@ -1,0 +1,58 @@
+---
+title: "RMarkdown学习"
+author: "孔令仁"
+date: "2019-10-3"
+output:
+  html_document:
+    df_print: paged
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, python.reticulate=FALSE)
+```
+> 上面的是基础设置(include=FLASE所以导出看不见)，创建Rmd文件时候就会有，不用改动
+>
+>另附一句吐槽：如果在代码中涉及中文（R语言注释和Python中文字符），运行单元的时候就会出现这个：
+>
+>Warning message:
+In strsplit(code, "\n", fixed = TRUE) :
+  input string 1 is invalid in this locale
+
+
+```{r,echo=FALSE}
+a <- 1 #如果注释有中文
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.这是一个R markdown文档。Markdown是……（详情见网址）
+
+[how to produce pdf](https://bookdown.org/yihui/rmarkdown/pdf-document.html)（谢益辉大佬对生成PDF的讲解）
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this
+当你点击 **Knit** 按钮，一个文件将被生成，其中包含的R代码也将被包含进去：
+
+- 代码块内是R代码
+- 下面一块是代码对应的输出
+
+```{r cars}
+summary(cars)
+Chinese <- "中文"
+print(Chinese)
+```
+
+P.S.其实我们也可以包含其他语言的代码：
+```{python}
+print("Python也可以")
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
