@@ -3,8 +3,6 @@ title: "RMarkdown"
 author: "klr"
 date: "2019-10-3"
 output:
-  pdf_document: 
-    latex_engine: xelatex
   html_document:
     df_print: paged
   word_document: default
@@ -31,9 +29,9 @@ This is an R Markdown document. Markdown is a simple formatting syntax for autho
 [how to produce pdf](https://bookdown.org/yihui/rmarkdown/pdf-document.html)（谢益辉大佬对生成PDF的讲解）
 
 如果卸载掉原有的latex，就可以安装更加适合R的[tinytex](https://yihui.name/tinytex/)：
-```{r}
-#install.packages('tinytex')
-#tinytex::install_tinytex()
+```r
+install.packages('tinytex')
+tinytex::install_tinytex()
 # to uninstall TinyTeX, run tinytex::uninstall_tinytex() 
 # 这个包真的神奇，安装前会提示你有两个error弹窗不实际影响安装
 ```
