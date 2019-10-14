@@ -1,0 +1,63 @@
+---
+title: "R语言0基础笔记"
+author:
+  - 
+documentclass: ctexart
+output:
+  rticles::ctex:
+    fig_caption: yes
+    number_sections: yes
+    toc: yes
+classoption: "hyperref,"
+---
+
+# R语言基础知识
+
+## 常用操作
+
+最基本的当然是输出`Hello world!`
+对于命令行输出的结果，R有点类似于MATLAB，如果一行是单独的变量名，就会输出变量的值，这个可以通过后面加`;`来阻止；不过不同的是，R语言一般的语句不会像MATLAB那样冒出来变量的值，因此R一般直接用换行来分隔语句（如果你愿意用`;`分隔，写在一行也是可以的）,所以R一般没有句尾`;`。
+
+```{r}
+sayHello <- "Hello world!"
+sayHello
+print(sayHello)
+sayHello;print(sayHello)
+```
+
+其实我们可以注意到，上面的过程中我们还使用了赋值语句`<-`，这是R的一大特色：
+向左向右的箭头都可以表示赋值，而且第二行的写法非常独特。
+
+P.S.R语言字符串可以是单引号或者双引号都可以。
+```{r}
+str1 <- "str1" 
+'str2' -> str2
+print(str1)
+print(str2)
+```
+
+一种语言当然是要有注释的，在R中使用`#`作为单行注释，没有多行注释，不过可以使用一些土办法：
+```{r}
+# 单行注释
+if(FALSE){
+  note <- "
+  你可以在字符串里面跨行写东西
+  只要不打出来就没什么影响
+  为了不占内存还可以把这句放在if(FALSE)里面
+  ";
+}
+```
+
+## 数据类型
+
+
+## 很可能用到的库函数
+
+```{r}
+unique(c(1,1,2)) #去除重复元素
+
+str<-"string";substr<-"str";notsub<-"awsl";grepl(substr,c(notsub,str)) #判断是否匹配
+
+duplicated(c(1,2,1))#检查是否重复（通过返回一个bool向量）
+```
+
