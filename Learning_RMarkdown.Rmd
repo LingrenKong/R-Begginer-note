@@ -9,7 +9,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, python.reticulate=FALSE)
+knitr::opts_chunk$set(echo = TRUE)
 #warnings('off')
 ```
 > 上面的是基础设置(include=FLASE所以导出看不见)，创建Rmd文件时候就会有，不用改动
@@ -26,7 +26,7 @@ In strsplit(code, "\n", fixed = TRUE) :
 
 This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.这是一个R markdown文档。Markdown是……（详情见网址）
 
-[how to produce pdf](https://bookdown.org/yihui/rmarkdown/pdf-document.html)（谢益辉大佬对生成PDF的讲解）
+[how to produce pdf](https://bookdown.org/yihui/rmarkdown/pdf-document.html)（谢益辉对生成PDF的讲解）
 
 如果卸载掉原有的latex，就可以安装更加适合R的[tinytex](https://yihui.name/tinytex/)：
 ```r

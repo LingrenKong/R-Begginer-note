@@ -1,0 +1,115 @@
+---
+title: "R语言词云"
+author:
+documentclass: ctexart
+output:
+  rticles::ctex:
+    fig_caption: yes
+    number_sections: yes
+    toc: yes
+classoption: "hyperref,"
+---
+
+# 词云相关
+
+## 相关包安装
+
+### wordcloud2
+
+[wordcloud2统计之都的介绍](https://cosx.org/2016/08/wordcloud2)
+
+部分功能可能直接install不管用，要用GitHub安装（现在不知道是不是这样）
+
+`devtools::install_github("lchiffon/wordcloud2")`
+
+```r
+#install.packages("wordcloud2") 安装方式
+library(wordcloud2)#导入--有两个函数
+wordcloud2(data, size = 1, minSize = 0, gridSize =  0,
+    fontFamily = 'Segoe UI', fontWeight = 'bold',
+    color = 'random-dark', backgroundColor = "white",
+    minRotation = -pi/4, maxRotation = pi/4, shuffle = TRUE,
+    rotateRatio = 0.4, shape = 'circle', ellipticity = 0.65,
+    widgetsize = NULL, figPath = NULL, hoverFunction = NULL)
+#参数解释见下
+letterCloud(data, word, wordSize = 0, letterFont = NULL, ...)
+letterCloud: 使用选定的词绘制词云 (就像刚才那个 wordcloud2 的图片)
+```
+
+```{r}
+library(wordcloud2)
+data <- data.frame(
+     name = c("R语言","学习","快乐","有趣",
+              "收获满满","专业知识","统计","锻炼技能","Data",
+              "学以致用","实践","数据","程序","R"),
+     freq = c(1000,500,300,250,233,233,233,233,233,233,275,300,250,233)
+     )
+wordcloud2(data,shape = 'cardiod')
+```
+
+
+（1）data：词云生成数据，包含具体词语以及频率；【第一列词名，第二列词频】
+
+（2）size：字体大小，默认为1，一般来说该值越小，生成的形状轮廓越明显；
+
+（3）fontFamily：字体，如‘微软雅黑’；
+
+（4）fontWeight：字体粗细，包含‘normal’，‘bold’以及‘600’；
+
+（5）color：字体颜色，可以选择‘random-dark’以及‘random-light’，其实就是颜色色系；
+
+（6）backgroundColor：背景颜色，支持R语言中的常用颜色，如‘gray’，‘black’，但是还支持不了更加具体的颜色选择，如‘gray20’；
+
+（7）minRontatin与maxRontatin：字体旋转角度范围的最小值以及最大值，选定后，字体会在该范围内随机旋转；
+
+（8）rotationRation：字体旋转比例，如设定为1，则全部词语都会发生旋转；
+
+（9）shape：词云形状选择，默认是‘circle’，即圆形。还可以选择‘cardioid’（苹果形或心形），‘star’（星形），‘diamond’（钻石），‘triangle-forward’（三角形），‘triangle’（三角形），‘pentagon’（五边形）；
+原文：https://blog.csdn.net/lht_okk/article/details/54880614 
+
+figPath 可以更改路径【把自己要用的图片添加进去也行】
+
+```r
+figPath = system.file("examples/t.png",package = "wordcloud2")#R中可以用/表达路径或者\\
+wordcloud2(demoFreq, figPath = figPath, size = 1.5,color = "skyblue")
+lettercloud(freq,"要写的字词")
+```
+
+
+
+### 词云图如何保存
+
+[关于R词云的更多信息](https://www.r-graph-gallery.com/196-the-wordcloud2-library/)
+
+```r
+#install webshot
+library(webshot)
+webshot::install_phantomjs()
+# Make the graph
+my_graph=wordcloud2(demoFreq, size=1.5)
+# save it in html
+library("htmlwidgets")
+saveWidget(my_graph,"tmp.html",selfcontained = F)
+# and in png
+webshot("tmp.html","fig_1.pdf", delay =5, vwidth = 480, vheight=480)
+```
+
+
+
+### jiebaR分词
+
+[官方文档](http://qinwenfeng.com/jiebaR/)
+
+```{r}
+# install.packages("jiebaR")
+library(jiebaR)
+myworker <- worker() #创建分词器
+seg <- segment("此处放分词文本",myworker)
+myfreq <- freq(seg)#这就得到词频了
+print(myfreq)
+```
+
+
+### showtext：字体，好玩的字体和好玩的图形
+
+暂无

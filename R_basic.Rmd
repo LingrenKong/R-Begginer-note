@@ -11,33 +11,72 @@ output:
 classoption: "hyperref,"
 ---
 
-# R语言基础知识
+```{r setup,echo=FALSE}
+warnings('off')
+```
+
+
+# R语言基础知识（从语言本身开始）
+
+推荐教材
+
+- R语言实战 R In Action
+
+- 基于R的统计分析与数据挖掘
+
+- [文档-中英文都有](https://cran.r-project.org/other-docs.html)
+
+- [文档-英文全集](https://cran.r-project.org/manuals.html)
+
+- 153个问题学会R
+
+- COS论坛
+
+- [W3Cschool](https://www.w3cschool.cn/r/)有比较细致的入门
+
 
 ## 常用操作
+
+### 输出（print/cat或者使用变量名）
 
 最基本的当然是输出`Hello world!`
 对于命令行输出的结果，R有点类似于MATLAB，如果一行是单独的变量名，就会输出变量的值，这个可以通过后面加`;`来阻止；不过不同的是，R语言一般的语句不会像MATLAB那样冒出来变量的值，因此R一般直接用换行来分隔语句（如果你愿意用`;`分隔，写在一行也是可以的）,所以R一般没有句尾`;`。
 
-```{r}
+```{r hello}
 sayHello <- "Hello world!"
 sayHello
 print(sayHello)
 sayHello;print(sayHello)
 ```
 
+`print()`可以输出，但是只可以输出一个变量（或者输出一个向量），
+如果多个变量一起输出，可以用`cat()`，虽然用向量可以把多个变量用`print()`输出，但是会导致数据被统一类型（向量特性）
+```{r print&cat}
+a <- 1
+b <- 2
+c <-'char'
+print(c(a,b,c))
+cat(a,b,c)
+```
+
+
+### 用`->`赋值
+
 其实我们可以注意到，上面的过程中我们还使用了赋值语句`<-`，这是R的一大特色：
 向左向右的箭头都可以表示赋值，而且第二行的写法非常独特。
 
-P.S.R语言字符串可以是单引号或者双引号都可以。
-```{r}
+P.S. 字符串可以是单引号或者双引号都可以。
+```{r arrow}
 str1 <- "str1" 
 'str2' -> str2
 print(str1)
 print(str2)
 ```
 
+### 注释
+
 一种语言当然是要有注释的，在R中使用`#`作为单行注释，没有多行注释，不过可以使用一些土办法：
-```{r}
+```{r note}
 # 单行注释
 if(FALSE){
   note <- "
@@ -50,14 +89,224 @@ if(FALSE){
 
 ## 数据类型
 
+### 基本数据
+
+最基本的数据是以下几种：
+
+```{r basicData}
+print(c(typeof(TRUE),typeof(1L),typeof(1),typeof("char"),typeof(1+0i),typeof(raw(1))))
+```
+
+P.S. 
+
+- 整型要在后面加一个L，否则都是`double`
+
+- raw格式不知道有啥用
+
+- `class()`，`mode()`和`typeof()`不太一样，如果有时间可以慢慢研究
+
+### 数据的组织形式
+
+在Rstudio中可以看到，矩阵、数据表、列表都属于`Data`，而向量、因子、多维数组属于`Values`。
+两者的区别是？
+
+```{r viewData}
+vector <- c(1,2,3,3)
+mat <- matrix(vector,2,2)
+mylist <- list(1,1L,'char',c(TRUE,FALSE))
+arr <- array(1:18,dim = c(2,3,3))
+fac <- factor(vector)
+df <- data.frame(
+  age = 15:17,
+  name = c('a','a','w')
+)
+```
+
+### 变量
+
+变量可以使用`.`，`_`，数字、字母，其中只有点和字母可以在开头，用点的是隐藏变量，需要`ls(all.name=TRUE)`才能够显示。
+
+R是动态变量语言，类似于Python
+
+查看变量：
+```{r ls&rm}
+rm(list = ls());a<-1;.b<-2;awsl<-3;aw<-4;
+ls()#返回所有未隐藏的变量（Rstudio的查看器也是这个效果）
+ls(all.names = TRUE)#包含隐藏的（暂时不知道把自己的变量名隐藏有啥用）
+ls(pattern = 'a*')#正则表达式匹配查找
+```
+
+清除变量：
+```{r rm}
+rm(list = ls())
+a<-1;b<-2;c<-3;
+rm(a)#不带引号的
+rm('b')#带引号的
+ls()
+```
+
+### 运算符
+
+[教程](https://www.w3cschool.cn/r/r_operators.html)
+
+注意事项：
+
+- 赋值符号
+
+- 向量运算符默认向量对应元素操作：$a*b = a^Tb$，和数学运算中的向量乘法有区别
+
+- `%*%`才是矩阵乘法
+
+- `%%`求余，`%/%`求商
+
+- `%in%`判断包含关系
+
+- `:`用于构建序列
+
+- `| &`是elementwise的操作，对向量每个元素有效，而`|| &&`只作用于首个元素
+
+```{r multiply}
+a <- matrix(1:4,2,2)
+b <- matrix(2:5,2,2)
+print(a)
+print(b)
+print(a*b)
+print(a%*%b)# 这才是矩阵乘法
+```
+
+### 循环和分支
+
+[官方文档](https://cran.r-project.org/doc/manuals/r-release/R-intro.html#Loops-and-conditional-execution)
+
+```r
+if(){
+
+}
+
+if(){
+
+}else{
+
+}
+```
+
+R的switch语句其实是一个匹配的功能，用途比C的switch少一些，但是也有很多机智操作。
+
+```{r switch-from-doc}
+# 文档里面对switch的示例
+
+require(stats)
+centre <- function(x, type) {
+  switch(type,
+         mean = mean(x),
+         median = median(x),
+         trimmed = mean(x, trim = .1))
+}
+x <- rcauchy(10)
+centre(x, "mean")
+centre(x, "median")
+centre(x, "trimmed")
+
+ccc <- c("b","QQ","a","A","bb")
+# note: cat() produces no output for NULL
+for(ch in ccc)
+    cat(ch,":", switch(EXPR = ch, a = 1, b = 2:3), "\n")
+for(ch in ccc)
+    cat(ch,":", switch(EXPR = ch, a =, A = 1, b = 2:3, "Otherwise: last"),"\n")
+
+## switch(f, *) with a factor f
+ff <- gl(3,1, labels=LETTERS[3:1])
+ff[1] # C
+## so one might expect " is C" here, but
+switch(ff[1], A = "I am A", B="Bb..", C=" is C")# -> "I am A"
+## so we give a warning
+
+## Numeric EXPR does not allow a default value to be specified
+## -- it is always NULL
+for(i in c(-1:3, 9))  print(switch(i, 1, 2 , 3, 4))
+
+## visibility
+switch(1, invisible(pi), pi)
+switch(2, invisible(pi), pi)
+```
+
+```r
+# v is vector/1:100/list/string/etc
+for(i in v){
+
+}
+
+while(TRUE){
+
+}
+
+repeat {
+   dosomething
+   
+   if(exitcode) {
+      break
+   }
+}
+```
+
+break和C的break类似，next类似于continue
+
+
+### 数据操作
+
+```{r helpme}
+#?rbind合并数据帧
+#?merge
+#?cast;?melt
+
+```
+
 
 ## 很可能用到的库函数
 
-```{r}
+```{r someFunction}
 unique(c(1,1,2)) #去除重复元素
 
 str<-"string";substr<-"str";notsub<-"awsl";grepl(substr,c(notsub,str)) #判断是否匹配
 
 duplicated(c(1,2,1))#检查是否重复（通过返回一个bool向量）
+
+rm(list=ls())#清除所有（rm()可以清除任何内容，通过名字（有没有引号都行））
 ```
+
+
+
+
+
+# 报错血泪史
+
+一般来说R不会出什么太大的故障，但是有时候还是会有的。
+
+## install.packages安装失败
+
+R中install.packages()是从浏览器中连接镜像的，所以无法连接服务器很可能是在这一环节出现了问题。打开电脑的浏览器看能不能正常上网【如果用VPN可能会有这种错误】
+
+[Rstudio install.packages失败解决方式](https://blog.csdn.net/bgk083/article/details/51104067)
+
+进入到R的安装目录，编辑/etc/Rprofile.site【VScode打开】
+
+添加 options(download.file.method="libcurl")，重新打开Rstudio即可
+
+## 有些包官方安装有未更新漏洞
+
+直接从GitHub下载作者的版本
+
+比如`devtools::install_github("lchiffon/wordcloud2")`
+
+但是安全性会低一些（不要乱下载不知道是什么的包）
+
+## 数组越界
+
+R都是从1开始下标的，因此不要用0
+
+## 系统崩溃
+
+### 在Rstudio出现‘R Session Aborted’
+
+情况：在代码调用了CSS，但是建立的markdown在另一个文件夹，没办法调用
 

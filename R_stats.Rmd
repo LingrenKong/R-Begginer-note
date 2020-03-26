@@ -1,0 +1,39 @@
+---
+title: "R语言统计函数使用"
+author:
+documentclass: ctexart
+output:
+  rticles::ctex:
+    fig_caption: yes
+    number_sections: yes
+    toc: yes
+classoption: "hyperref,"
+---
+
+# 统计函数常用
+
+## 平均数、中位数、众数
+
+mean(x, trim = 0, na.rm = FALSE, ...)
+- 数据是x
+- trim是0~0.5的小数，代表去掉极端值在整体的比例是多少（这个特性可以便捷处理极端值）
+- na.rm代表是否去除缺省值
+
+```{r mean}
+#文档用例
+x <- c(0:10, 50)
+xm <- mean(x)
+cat(xm, mean(x, trim = 0.10))
+```
+中位数：median(x, na.rm = FALSE, ...)
+
+众数：虽然mode是众数的英文，但是mode函数并不是众数……
+
+## 假设检验
+
+```{r}
+x <- rnorm(36,mean=680,sd=60)
+x
+t.test(x,,alternative = "less",mu=700)
+```
+

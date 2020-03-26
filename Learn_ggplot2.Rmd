@@ -1,0 +1,132 @@
+---
+title: "ggplot2学习笔记"
+author:
+documentclass: ctexart
+output:
+  rticles::ctex:
+    fig_caption: yes
+    number_sections: yes
+    toc: yes
+classoption: "hyperref,"
+---
+
+# 基本概念
+
+- 数据Data
+- 映射Mapping
+- 标度Scale
+- 几何对象Geometric
+- 统计变换Statistics
+- 坐标系统Coordinate
+- 图层Layer
+- 分组Facet
+
+# 实践
+
+```{r setup}
+warnings('off') #关掉warning
+```
+
+```{r}
+library(ggplot2)
+library(ggThemeAssist) #提供一个面板来调颜色等
+data("mpg") #将ggplot2里面的mpg这个数据加载到环境里面
+```
+
+最基础的操作：
+首先要创建一个gglpot对象，其实没有必须的参数，但是可以使用的参数是：
+- data：图的数据，是一个dataframe
+- mapping：如何把数据变成轴
+
+手动翻译文档：
+
+`ggplot()`被用于构建初始的plot对象，而且后面一般通过`+`来添加图的组成部分。以下是三个常见的使用：
+
+- ggplot(df, aes(x, y, other aesthetics))
+- ggplot(df)
+- ggplot()
+
+如果所有图层使用相同的data和aesthetics，那么建议使用第一个方法（尽管这个方法后面也可以添加使用其他数据的图层）。见例子1。
+
+第二个方法只设置了data而没有设定aesthetics，这在主要使用一个数据集，而数据轴每个图层都不同的时候比较有用。
+
+第三个方法什么都没有，只有一个骨架，适用于多个数据提供给多个图层的时候，比如复杂的图形。
+
+P.S.如果没有数据是不可以设置aes的
+
+```{r}
+# 文档示例用到的两个dataframe
+# Generate some sample data, then compute mean and standard deviation in each group
+# 生成一些示例数据df，然后计算每一组（abc）的均值和标准差
+df <- data.frame(
+  gp = factor(rep(letters[1:3], each = 10)), #10个a，然后10个b，然后10个c，转换成因子
+  y = rnorm(30) #取值用标准正态随机数
+)
+ds <- do.call(rbind, lapply(split(df, df$gp), function(d) {
+  data.frame(mean = mean(d$y), sd = sd(d$y), gp = d$gp)
+}))
+#do.call是个函数，将后面的参数传进第一个对象
+#rbind是
+#lapply
+```
+
+```{r}
+# 示例1，采用第一种创建方法
+# The summary data frame ds is used to plot larger red points on top of the raw data. 
+# 大红点是summary数据表的数据
+# Note that we don't need to supply `data` or `mapping`in each layer because the defaults from ggplot() are used.
+# 注意到我们不需要给每个图层提供data和mapping，因为可以默认使用ggplot函数传递的参数
+ggplot(df, aes(gp, y)) +
+  geom_point() + #不需要传参，使用默认设定
+  geom_point(data = ds, aes(y = mean), colour = 'red', size = 3) #y轴采用了另外的数据
+```
+
+```{r}
+# 示例2
+# Same plot as above, declaring only the data frame in ggplot().
+# 和上面是一个图，但是只声明了data
+# Note how the x and y aesthetics must now be declared ineach geom_point() layer.
+# 注意xy轴现在必须每层都声明
+ggplot(df) +
+  geom_point(aes(gp, y)) +
+  geom_point(data = ds, aes(gp, mean), colour = 'red', size = 3)
+```
+
+```{r}
+# Alternatively we can fully specify the plot in each layer.
+# 一个替代方案是我们可以在每层去限定plot的参数
+# This is not useful here, but can be more clear when working with complex mult-dataset graphics
+# 这在这个图这里不是太有用，但是对于复杂数据的图像会更清楚明白
+ggplot() +
+  geom_point(data = df, aes(gp, y)) +
+  geom_point(data = ds, aes(gp, mean), colour = 'red', size = 3) +
+  geom_errorbar(
+    data = ds,
+    aes(gp, mean, ymin = mean - sd, ymax = mean + sd),
+    colour = 'red',
+    width = 0.4
+  )
+
+```
+
+
+基本散点图
+
+```{r}
+myGraph <- ggplot(data = mpg,mapping = aes(cty,hwy))
+myGraph <- myGraph + geom_point()
+# 比较基础的主题可以用ggplot2内置的theme_xxx预设（命令行敲函数或者?ggplot2来了解）
+# ggthemes包已经被合并到ggplot2里面了
+#ggThemeAssistGadget(myGraph) 
+# 使用这个函数可以在shiny的网页预览并修改颜色等特性，结束后函数所在一行会变成下面这种一系列加法（也就是ggplot的语法）
+myGraph + theme(plot.subtitle = element_text(vjust = 1), 
+    plot.caption = element_text(vjust = 1), 
+    panel.grid.major = element_line(colour = "gray30", 
+        linetype = "dashed"), panel.grid.minor = element_line(colour = "gray30", 
+        linetype = "dotted"), panel.background = element_rect(fill = "gray90"), 
+    plot.background = element_rect(fill = "antiquewhite2"))
+myGraph # 如果不重新赋值，那么加法的效果是一次性的
+```
+
+
+
