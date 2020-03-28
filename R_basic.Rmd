@@ -1,7 +1,6 @@
 ---
 title: "R语言0基础笔记"
-author:
-  - 
+author: "孔令仁"
 documentclass: ctexart
 output:
   rticles::ctex:
@@ -18,7 +17,7 @@ warnings('off')
 
 # R语言基础知识（从语言本身开始）
 
-推荐教材
+## 教材与资料
 
 - R语言实战 R In Action
 
@@ -40,13 +39,19 @@ warnings('off')
 ### 输出（print/cat或者使用变量名）
 
 最基本的当然是输出`Hello world!`
-对于命令行输出的结果，R有点类似于MATLAB，如果一行是单独的变量名，就会输出变量的值，这个可以通过后面加`;`来阻止；不过不同的是，R语言一般的语句不会像MATLAB那样冒出来变量的值，因此R一般直接用换行来分隔语句（如果你愿意用`;`分隔，写在一行也是可以的）,所以R一般没有句尾`;`。
+
+在这方面R的特性和python比较类似：
+
+- 如果是在交互的一行打出一个变量名或者返回值的函数，会显示出来数值
+
+- 赋值语句是不显示内容的（MATLAB是只要没写分号就全输出数值）
+
+P.S.其实R语言是有语句分隔符`;`的，只不过大家一般都习惯用换行来分隔了
 
 ```{r hello}
-sayHello <- "Hello world!"
-sayHello
+sayHello <- "Hello world!"# 赋值语句不会显示数值 
+sayHello #单写变量名是会显示数值的
 print(sayHello)
-sayHello;print(sayHello)
 ```
 
 `print()`可以输出，但是只可以输出一个变量（或者输出一个向量），
@@ -63,14 +68,15 @@ cat(a,b,c)
 ### 用`->`赋值
 
 其实我们可以注意到，上面的过程中我们还使用了赋值语句`<-`，这是R的一大特色：
-向左向右的箭头都可以表示赋值，而且第二行的写法非常独特。
+向左向右的箭头都可以表示赋值，而且第二行的写法非常独特，可以从左向右赋值。
+
+一个很好的Rstudio快捷键是ALt+“-”可以打出左箭头
 
 P.S. 字符串可以是单引号或者双引号都可以。
 ```{r arrow}
-str1 <- "str1" 
-'str2' -> str2
-print(str1)
-print(str2)
+str1 <- "1" 
+'2' -> str2
+cat(str1,str2)
 ```
 
 ### 注释
@@ -87,11 +93,21 @@ if(FALSE){
 }
 ```
 
+### 条件
+
+就是if-else
+
+### 循环
+
+R语言有循环，但是基本上用到循环就意味着向量化操作没练好
+
+R多重循环会卡爆
+
 ## 数据类型
 
 ### 基本数据
 
-最基本的数据是以下几种：
+最基本的数据格式是以下几种：
 
 ```{r basicData}
 print(c(typeof(TRUE),typeof(1L),typeof(1),typeof("char"),typeof(1+0i),typeof(raw(1))))
@@ -99,16 +115,18 @@ print(c(typeof(TRUE),typeof(1L),typeof(1),typeof("char"),typeof(1+0i),typeof(raw
 
 P.S. 
 
-- 整型要在后面加一个L，否则都是`double`
+- 整型要在后面加一个L，否则都是`double`(如果是class则是把1.0认为是numeric)
 
 - raw格式不知道有啥用
 
 - `class()`，`mode()`和`typeof()`不太一样，如果有时间可以慢慢研究
 
+
 ### 数据的组织形式
 
 在Rstudio中可以看到，矩阵、数据表、列表都属于`Data`，而向量、因子、多维数组属于`Values`。
 两者的区别是？
+
 
 ```{r viewData}
 vector <- c(1,2,3,3)
@@ -122,7 +140,146 @@ df <- data.frame(
 )
 ```
 
-### 变量
+### 因子Factor
+
+```{r}
+factor(c('Male','Female','?','Female')) #因子
+factor(c('Male','Female','?','Female'),levels = c('Male','Female','?')) #指定因子的排序（不指定就是字典序了）
+factor(c('Male','Female','?','Female'),levels = c('Male','Female'))
+# levels漏项会导致漏掉的变为NA
+```
+
+### 日期处理
+
+关于时间的符号格式化之类的在用的时候查就行
+
+重要函数：
+
+* `as.Date()`将字符转换为日期
+* `asPOSIXct()`格式转换强化版，可以显示分秒
+* `Sys.time()`返回系统时间
+
+
+```{r}
+dates <- as.Date(c("2020-09-16","2019-09-16"))
+days <- dates[1]-dates[2]#闰年！
+print(days)
+print(Sys.time())
+as.POSIXct("2020-03-28 19:43:17", format = "%Y-%m-%d %H:%M:%S", tz= "UTC")#可以设置时区tz
+```
+
+
+另外日期的数据是可以格式化转换成不同形式字符串的：
+```{r}
+format(Sys.time(),'%Y owwww %m')
+```
+
+R包时间提取
+```{r}
+#install.packages('lubridate')
+library(lubridate)
+date <- as.Date("2020-3-26")
+print(wday(date))#本周第k天（从周日开始）
+```
+
+### 向量
+
+向量具有**统一的数据类型**，如果数字和字符一起就会都转换为字符
+
+如何生成向量：手动，冒号表达式（限于数值）或者使用`seq`
+
+```{r}
+print(1:4)
+print(c(1,2,3,4))
+print(seq(1,4,by=1)) #等差
+print(seq(1,4,length.out=3)) #总输出确定，自动分割
+print(letters[seq(1,26,by=2)])#letters是内置的26字母向量LETTERS是大写版
+```
+
+向量函数：
+```{r}
+t <- c(1,2,3,4)
+print(length(t))
+print(which(t==1)) #向量定位查找函数
+print(which(t==0)) #不存在即integer(0)
+```
+
+排序用函数order和sort，order是返回排列的位序，sort是返回排序结果
+
+### 矩阵运算（这一块要多读文档才能学透）
+
+cbind(..., deparse.level = 1) 把向量作为列向量合并
+rbind(..., deparse.level = 1) 向量作为行向量合并
+
+crossprod
+tcrossprod
+matrix矩阵是内置的但是有一个包叫Matrix（大写首字母）可以有稀疏矩阵sparse模式
+
+
+
+```{r}
+
+cbind(1:3,2:4)
+rbind(1:3,2:4)
+
+M = matrix(1:9, nrow = 3, ncol = 3)
+crossprod(M)
+
+M1 = matrix(1, nrow = 1000, ncol = 1000)
+system.time({aa = M1%*%t(M1)})
+system.time({aa = crossprod(M1)})
+
+library(Matrix)
+
+m1 <- matrix(0, nrow = 1000, ncol = 1000)
+m2 <- Matrix(0, nrow = 1000, ncol = 1000, sparse = TRUE)
+object.size(m1)
+object.size(m2)
+
+system.time({a1 = m1%*%Diagonal(n = 1000, x = 1:1000)})
+system.time({a2 = m1%*%diag(1:1000)})
+
+A <- spMatrix(10,20, i = c(1,3:8),
+              j = c(2,9,6:10),
+              x = 7 * (1:7))
+A 
+summary(A)
+```
+
+
+### 数据框
+
+数据框是的R重要数据分析工具（类似于python的pandas）
+
+- 数据库的一列是df$columnname的格式
+
+- 开头用head函数
+
+- 数值汇总用summary函数
+
+- colnames更改列名
+
+- merge合并数据框，参数all.x=T是左连接，左侧全保留（类似SQL左连接）
+
+```{r}
+L3 <- LETTERS[1:3]
+fac <- sample(L3, 10, replace = TRUE)
+d <- data.frame(x = 1, y = 1:10, fac = fac)
+d$x
+colnames(d)[1] <- 'x1' #数据框第一列名称改成x1
+head(d)
+summary(d)
+d2 <- data.frame(x = 2, y = 1:10)
+merge(d,d2)
+```
+
+### 字符串
+
+字符串处理用paste等函数
+
+字符串处理最好还是遇到具体问题搜索和查文档
+
+## 变量
 
 变量可以使用`.`，`_`，数字、字母，其中只有点和字母可以在开头，用点的是隐藏变量，需要`ls(all.name=TRUE)`才能够显示。
 
@@ -145,7 +302,7 @@ rm('b')#带引号的
 ls()
 ```
 
-### 运算符
+## 运算符
 
 [教程](https://www.w3cschool.cn/r/r_operators.html)
 

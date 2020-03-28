@@ -1,6 +1,6 @@
 ---
 title: "RMarkdown"
-author: "klr"
+author: "这个其实是默认的rmd初始文档加点注释和我的理解"
 date: "2019-10-3"
 output:
   html_document:
