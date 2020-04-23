@@ -10,6 +10,24 @@ output:
 classoption: "hyperref,"
 ---
 
+# 画常见分布
+
+## 正态分布（以及有偏估计的均分准则）
+
+```{r}
+set.seed(233)
+x <- seq(-10,15,length.out = 1000)
+y1 <-  dnorm(x,-2.2,2)
+y2 <-  dnorm(x,-1.5,1.5)
+# 画图
+plot(x,y1,type='l',col="orange",ylab="Density密度",lwd=2,ylim=c(0,0.3),xlim=c(-8,5))
+lines(x,y2,lwd=2,col="blue")
+abline(v=-2.2,lty=2,col="orange")
+abline(v=-1.5,lty=2,col="blue")
+abline(v=-2,lwd=2,col="red")
+```
+
+
 # 统计函数常用
 
 ## 单组数据（向量）
