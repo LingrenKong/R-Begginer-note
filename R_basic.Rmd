@@ -1,16 +1,13 @@
 ---
 title: "R语言0基础笔记"
 author: "孔令仁"
-documentclass: ctexart
 output:
-  rticles::ctex:
-    fig_caption: yes
-    number_sections: yes
-    toc: yes
-classoption: "hyperref,"
+  html_document:
+    df_print: paged
+  word_document: default
 ---
 
-```{r setup,echo=FALSE}
+```{r setup, include=FALSE}
 warnings('off')
 ```
 
@@ -397,6 +394,8 @@ break和C的break类似，next类似于continue
 
 ## 很可能用到的库函数
 
+
+
 ```{r someFunction}
 unique(c(1,1,2)) #去除重复元素
 
@@ -406,6 +405,19 @@ duplicated(c(1,2,1))#检查是否重复（通过返回一个bool向量）
 
 rm(list=ls())#清除所有（rm()可以清除任何内容，通过名字（有没有引号都行））
 ```
+
+### 导入和导出
+
+导入可以用Rstudio，也可以用函数，而导出一般有函数
+
+导出示例：
+```{r}
+library(ggplot2)
+data(mpg)
+write.csv(mpg,file="mpg.csv")
+```
+
+还可以.table，输出txt的表
 
 
 ## 自定义函数

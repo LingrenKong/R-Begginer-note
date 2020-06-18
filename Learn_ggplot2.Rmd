@@ -1,13 +1,10 @@
 ---
 title: "ggplot2学习笔记"
 author:
-documentclass: ctexart
 output:
-  rticles::ctex:
-    fig_caption: yes
-    number_sections: yes
-    toc: yes
-classoption: "hyperref,"
+  html_document:
+    df_print: paged
+  word_document: default
 ---
 
 # 基本概念

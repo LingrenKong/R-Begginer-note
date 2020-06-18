@@ -10,7 +10,7 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-#warnings('off')
+options(warn =-1)
 ```
 > 上面的是基础设置(include=FLASE所以导出看不见)，创建Rmd文件时候就会有，不用改动
 >

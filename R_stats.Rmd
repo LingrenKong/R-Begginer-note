@@ -1,16 +1,36 @@
 ---
 title: "R语言统计函数使用"
 author: "孔令仁"
-documentclass: ctexart
 output:
-  rticles::ctex:
-    fig_caption: yes
-    number_sections: yes
-    toc: yes
-classoption: "hyperref,"
+  html_document:
+    df_print: paged
+  word_document: default
 ---
 
-# 画常见分布
+```{r setup, include=FALSE}
+options(warn =-1)
+```
+
+# 统计分布用计算机代替查表
+
+以两点分布假设检验势函数为例
+
+$$
+g(p)=P_{\rho}(T \geqslant c)=\sum_{j=c}^{n}\left[\begin{array}{l}
+n \\
+c
+\end{array}\right] p^{c-1}(1-p)^{n-c}=\frac{\Gamma(n+1)}{\Gamma(c) \Gamma(n-c+1)} \int_{0}^{p} u^{c-1}(1-u)^{n-c} \mathrm{d} u
+$$
+
+如果取n=20，c=8,p=0.2
+
+```{r}
+pbeta(0.2,8,13)
+```
+
+
+
+# 画常见统计图
 
 ## 正态分布（以及有偏估计的均分准则）
 
@@ -27,11 +47,48 @@ abline(v=-1.5,lty=2,col="blue")
 abline(v=-2,lwd=2,col="red")
 ```
 
+## 置信区间的可视化
+
+N(0,1)抽样，根据样本求均值的置信区间，将每次的置信区间画出来
+```{r}
+##区间估计的模拟结果
+########从正态整体N(0,1)中随机抽出样本，进行总体均值的置信区间估计，样本量n=50,20,50,20,
+#置信度为0.95，0.95,0.6,0.6
+#重复50次试验
+# 构造函数~ci() 来计算置信区间
+ci=function(n,alpha){ #随机生成样本并求置信区间
+  x=rnorm(n,0,1)
+  u=mean(x);s=sqrt(var(x))
+  itv=qt(alpha/2,df=n-1,lower.tail=F,log.p = FALSE)*s/sqrt(n)#算置信区间d/2
+  ci1=u-itv;ci2=u+itv
+  list(ci1=ci1,u=u,ci2=ci2)#返回值是三元组，左-中点-右
+}
+
+# 函数~plotci() 重复~50 次估计并绘制置信区间的分布
+plotci=function(n,alpha){
+a=ci(n,alpha)
+plot(1,a$u,xlim=c(0,51),ylim=c(-1,1),xlab="",ylab="",pch=20)
+abline(h=0, lty=2)
+segments(1,a$ci1,1,a$ci2)
+for (i in 2:50){
+a=ci(n,alpha)
+points(i,a$u,pch=20)
+segments(i,a$ci1,i,a$ci2)
+}
+}
+par(mfrow=c(2,2));
+plotci(50,0.05);
+title("(a) n=50, 1-alpha=0.95");#title() 用于给图片加上标题
+plotci(20,0.05);title("(b) n=20, 1-alpha=0.95")
+plotci(50,0.4);title("(c) n=50, 1-alpha=0.6")
+plotci(20,0.4);title("(d) n=20, 1-alpha=0.6")
+```
+
+
 
 # 统计函数常用
 
 ## 单组数据（向量）
-
 
 mean(x, trim = 0, na.rm = FALSE, ...)
 - 数据是x
@@ -101,11 +158,96 @@ setdiff(x, y)
 setdiff(y, x)
 setequal(x, y)
 
-## 假设检验
+
+# 数理统计课上的小练习
+
+赋值和描述统计：
+```{r}
+#head(iris) #iris一个经典的内置数据
+slen <- iris$Sepal.Length
+swid <- iris$Sepal.Width
+plen <- iris$Petal.Length
+pwid <- iris$Petal.Width
+spe <- iris$Species
+
+
+cat("均值",mean(slen))
+cat("\nsetosa均值",mean(slen[spe=='setosa']))
+cat("\n方差",var(slen))
+cat("\n标准差",sd(slen))
+cat("\n中位数",median(slen))
+cat("\n指定分位数",quantile(slen,q=c(0.25,0.75)))
+#install.packages("fBasics")
+library("fBasics")
+cat("\n偏度",skewness(slen))
+cat("\n峰度",kurtosis(slen))
+
+```
+
+各类别比例：
+```{r}
+t <- table(spe)
+prop.table(t)
+```
+
+直方图：
+```{r}
+hist(slen,main="",xlab="Sepal.Length",breaks=10)
+par(mfrow=c(1,3))#多个图共同在一个图片上1*3放置
+hist(slen[spe=='setosa'],main="",xlab="setosa",breaks=10)
+hist(slen[spe=='versicolor'],main="",xlab="versicolor",breaks=10)
+hist(slen[spe=='virginica'],main="",xlab="virginica",breaks=10)
+```
+
+QQ图--不太好懂
+```{r}
+par(mfrow=c(1,2))
+qqnorm(scale(slen),main="",xlab="标准正态应该的分布",ylab="标准化后slen的样本分布")
+qqline(scale(slen), col = 2,main="") 
+qqplot(scale(slen[spe=='setosa']),scale(slen[spe=='versicolor']),
+       xlab="setosa",ylab="versicolor")
+```
+
+经验分布图
+```{r}
+# lwd改变线条粗细 lty指定线条类型
+plot.ecdf(slen[spe=='setosa'],main="",xlab="setosa",
+          lwd = 2,xlim=c(min(slen),max(slen)))
+lines(ecdf(slen[spe=='versicolor']),lty=3)
+legend("bottomright",c("setosa","versicolor"),lty=c(1,3),lwd=c(2,1))
+```
+
+# 再抽样
+
+## 抽样函数
 
 ```{r}
-x <- rnorm(36,mean=680,sd=60)
-x
-t.test(x,,alternative = "less",mu=700)
+#?sample
+sample(1:10)#默认抽样量为n，相当于排列
+sample(1:10,3)#抽3个
+sample(1:10,rep=T)#重复抽样
+```
+
+## 重抽样估计$\hat \theta$分位数
+
+emm
+
+
+```{r}
+t1 <- c(rep(1,119),rep(0,11037-119))
+t2 <- c(rep(1,98),rep(0,11034-98))
+B <- 1000
+```
+
+bootstrap方法对于偏差得到的是估计，而不是理论分析，比如下面的对于均值理论偏差是0，但是估计值不是，因为包含了抽样的随机性。
+
+```{r}
+x <- rnorm(200)
+B <- 1000
+t <- rep(0,B)
+for (i in 1:B){
+  t[i] <- mean(sample(x,rep=T))
+}
+mean(t)-mean(x)
 ```
 

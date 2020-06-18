@@ -1,0 +1,55 @@
+---
+title: "R中比较和机器学习相关的指数"
+author: ""
+date: "2020年6月4日"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# 优化函数
+
+## nlm 牛顿系列的迭代算法
+
+Non-Linear Minimization非线性最小化
+
+```{r}
+?nlm
+```
+
+应用：求一个负对数似然的最小值（意愿落实回归）
+
+使用sat考试的数据
+
+```{r}
+library(RSADBE)
+data(sat)
+head(sat)
+x <- sat$Sat
+y <- sat$Pass
+```
+
+```{r}
+foo <- function(p,x,y){
+  sum(-(y*(p[1]+p[2]*x)-log(1+exp(p[1]+p[2]*x))))
+}
+nlm(foo,p=c(1,1),x=x,y=y,hessian=T)
+```
+
+
+## glm广义线性模型
+
+Fitting Generalized Linear Models广义线性模型
+
+```{r}
+?glm
+```
+
+```{r}
+glm(formula=Pass~Sat,family=binomial(link=logit),data=sat)
+```
+
+
+
